@@ -21,11 +21,12 @@ Class ID: **VL2026270101688** (B2 + TB2 slot) · **Fall Semester 2026–27**
 
 | Registration Number | Name of the student | Role |
 | :--- | :--- | :--- |
+| 25BCE0337 | Pratik Ambastha | Simulation and packet-analysis specialist |
 | 25BCE0344 | Arunya Srivastava | Lead protocol analyst and FSM architect |
-| — | — | WAN systems and workflow architect |
-| — | — | Simulation and packet-analysis specialist |
-| — | — | Cybersecurity and threat analyst |
-| — | — | Standards, benchmarks and quality lead |
+| 25BCE0401 | Adarsh Kumar Singh | WAN systems and workflow architect |
+| 25BCE0998 | Pranjal Paul | Cybersecurity and threat analyst |
+| 25BCE2004 | Bhavya Singh | Standards, benchmarks and quality lead |
+| 25BBS0046 | Shriyansh Gangwar | Simulation and packet-analysis specialist |
 
 ---
 
@@ -269,6 +270,24 @@ The captured conversation is internally consistent and reproduces the transfer, 
 | 1235 | 37.741 | proxy → client | `-ERR [IN-USE] Mailbox is locked by another session!` (53 B) | **lockout caused by the orphaned session** |
 
 The capture also retains TCP keepalive probes from the server toward the orphaned connection (frames 1207 and 1225), which is the mechanism that eventually reclaims the lock in a production deployment.
+
+**Wireshark evidence (v4.6.9, full-screen views of the shipped capture).**
+
+![POP dialogue](screenshots/win01_pop_dialogue.png)
+
+*Screenshot 1 — Display filter `pop` (556 frames shown, count verified against `tshark`): the complete USER/PASS/STAT/LIST/UIDL/TOP/RETR dialogue decoded on TCP port 1110.*
+
+![SYN handshakes](screenshots/win02_syn_handshake.png)
+
+*Screenshot 2 — `tcp.flags.syn == 1 && tcp.port == 1110`: the handshakes of both client sessions.*
+
+![Follow TCP Stream, session 1](screenshots/win03_follow_stream_session1_retr_blackout.png)
+
+*Screenshot 3 — Follow TCP Stream, first session: login, `TOP 4 0`, then `RETR 4` truncated at 41.4 % by the link blackout.*
+
+![Follow TCP Stream, session 2](screenshots/win04_follow_stream_session2_lockout.png)
+
+*Screenshot 4 — Follow TCP Stream, reconnect: `PASS` answered 451 ms later with `-ERR [IN-USE]` — the orphaned session still holds the exclusive mailbox lock.*
 
 ### 5.4 Design of the resilient workflow
 
