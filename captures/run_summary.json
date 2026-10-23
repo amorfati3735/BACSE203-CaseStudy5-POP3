@@ -1,0 +1,20 @@
+{
+  "link_bps": 256000,
+  "one_way_delay_ms": 225,
+  "spool_sizes": [
+    12288,
+    87040,
+    460800,
+    1887436,
+    3355440
+  ],
+  "spool_total": 5803004,
+  "cutoff_bytes": 780000,
+  "retr_received": 779092,
+  "retr_seconds": 24.44,
+  "retr_kbps": 255.0,
+  "reconnect_response": "-ERR [IN-USE] Mailbox is locked by another session!",
+  "cutoff_at_seconds": 28.92,
+  "top_header_bytes": 363,
+  "top_reply_bytes": 366
+}

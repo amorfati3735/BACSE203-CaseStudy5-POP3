@@ -1,73 +1,110 @@
-# BACSE203: Computer Networks — Case Study 5
+# BACSE203 — Computer Networks · Case Study 5
 ## POP3 Mailbox Access in a Low-Bandwidth Branch
 
-[![Course](https://img.shields.io/badge/Course-BACSE203%20Computer%20Networks-blue)](https://github.com/ArunyaSrivastava/BACSE203-CaseStudy5-POP3)
-[![Status](https://img.shields.io/badge/Status-Complete%20%26%20Verified-success)](https://github.com/ArunyaSrivastava/BACSE203-CaseStudy5-POP3)
-[![Target](https://img.shields.io/badge/Evaluation%20Target-100%2F100%20Marks-gold)](https://github.com/ArunyaSrivastava/BACSE203-CaseStudy5-POP3)
+**School of Computer Science and Engineering (SCOPE), Vellore Institute of Technology**  
+Class ID `VL2026270101688` (B2 + TB2) · Fall Semester 2026–27
 
-This repository contains the complete research, architectural design, network simulation, packet captures, and final academic reports for **Case Study 5: POP3 Mailbox Access in a Low-Bandwidth Branch** under the **BACSE203: Computer Networks** curriculum at the **School of Computer Science and Engineering (SCOPE), Vellore Institute of Technology**.
+The final deliverable is **[`FINAL_REPORT.md`](./FINAL_REPORT.md)** — the complete report in the official template order, with five figures, ten tables, IEEE-style references and a reproducible experiment. Convert it to DOCX with `pandoc` (see below).
 
 ---
 
-## 📌 Repository Contents & Quick Links
+## What the case study shows
 
-| File / Artifact | Description |
+A branch on a 256 kbps satellite link with 450 ms RTT and 5 % loss cannot use POP3 as designed:
+
+| Finding | Value |
 | :--- | :--- |
-| **[`TEAM_AGENT_HANDOFF.md`](./TEAM_AGENT_HANDOFF.md)** | **Master Team Handoff & AI Agent Prompts for Persons 1 to 5.** Contains copy-paste prompts for teammates to execute their parts using AI assistants. |
-| **[`AGENT_PROGRESS_LOG.md`](./AGENT_PROGRESS_LOG.md)** | **Project Continuity & Turn Changelog.** Turn-by-turn operational log documenting actions, context, and instructions for incoming AI agents. |
-| **[`Case Study 5 - POP3 Mailbox Access in a Low-Bandwidth Branch.docx`](./Case%20Study%205%20-%20POP3%20Mailbox%20Access%20in%20a%20Low-Bandwidth%20Branch.docx)** | **The Complete Master Report** formatted in the official university template (260+ paragraphs, 6 tables, diagrams, complete answers to a, b, c). |
-| **[`Case Study 5 - Person 1 - Protocol Theory & Limitations.docx`](./Case%20Study%205%20-%20Person%201%20-%20Protocol%20Theory%20&%20Limitations.docx)** | **Person 1 Standalone Deliverable:** Section 1 Overview + Section 6.1 (Question a) with embedded high-resolution diagrams. |
-| **[`Case Study 5 - Person 3 - Simulation & Packet Analysis.docx`](./Case%20Study%205%20-%20Person%203%20-%20Simulation%20&%20Packet%20Analysis.docx)** | **Person 3 Standalone Deliverable:** Section 5 with Table 4, live terminal logs, and Wireshark packet capture frame analysis. |
-| **[`PERSON_3_SIMULATION_EVIDENCE.md`](./PERSON_3_SIMULATION_EVIDENCE.md)** | **Person 3 Master Visual Evidence Gallery:** 14-figure photographic compendium featuring live Wireshark TCP streams (Stream 25 normal vs Stream 26 lockout), handshake dissections (`tcp.flags.syn==1`), payload grids (`tcp.len>0`), and `TOP 4 0` selective pre-fetch traces. |
-| **[`pop3_wireshark_capture.pcap`](./pop3_wireshark_capture.pcap)** | **Standard Wireshark PCAP file** with 25 simulated frames (TCP handshake, plaintext credentials, link flap, and `-ERR [IN-USE]` lock contention). |
-| **[`run_wireshark_pop3_sim.py`](./run_wireshark_pop3_sim.py)** | **Live Python Simulation Script** generating live traffic on `Loopback: lo0` (Port 1110) for Wireshark live captures. |
-| **[`pop3_state_machine.png`](./pop3_state_machine.png)** | High-resolution diagram of the RFC 1939 Finite State Machine (Authorization $\rightarrow$ Transaction $\rightarrow$ Update). |
-| **[`pop3_bottlenecks.png`](./pop3_bottlenecks.png)** | High-resolution architectural diagram illustrating the 4 core failure bottlenecks across satellite WAN links. |
-| **[`Team_Work_Split_Quick_Action_Plan.pdf`](./Team_Work_Split_Quick_Action_Plan.pdf)** | Concise 2-page task delegation guide for the 5-member team. |
-| **[`Case_Study_5_Team_Work_Split_Charter.pdf`](./Case_Study_5_Team_Work_Split_Charter.pdf)** | Full 4-page execution charter with responsibility matrices, viva defense questions, and rubric mappings. |
+| Base64 inflation of a 3 MiB PDF | 4.11 MiB on the wire (+36.84 %), ≈138 s at 256 kbps |
+| TCP throughput at 5 % loss (Mathis) | ≈116 kbps, 45 % of line rate → 4.30 MB needs ≈297 s |
+| Measured `RETR 4` throughput in the lab | 255.0 kbps |
+| Link blackout in the run | after 781 kB = 41.4 % of the message |
+| Header-only `TOP 4 0` reply | **366 bytes** (99.98 % less than `RETR`) |
+| Error after reconnect | `-ERR [IN-USE] Mailbox is locked by another session!` |
+
+The proposed five-tier workflow moves the interactive path onto the branch LAN and leaves the WAN with small, compressed, encrypted and deferrable traffic.
 
 ---
 
-## 🎯 Case Study Scenario & Constraints
+## Repository layout
 
-* **Scenario:** A remote enterprise branch office operates over an intermittent, high-latency satellite WAN and requires reliable email access.
-* **Bandwidth:** 256 kbps (rate-limited backhaul).
-* **Latency:** 450 ms Round-Trip Time (RTT) geostationary propagation delay.
-* **Packet Loss:** 5% random bit error rate / drop rate.
-* **Email Payload:** Multi-part MIME messages with 3 MB attachments inflating to 4.11 MB (~37% Base64 + CRLF expansion).
-* **The Solution:** A 5-tier resilient email access workflow utilizing a local branch edge store-and-forward proxy (Dovecot/Fetchmail), selective two-phase header pre-fetching via `TOP msg 0`, wire-level compression, and outbound SMTP spooling with exponential backoff.
+```
+FINAL_REPORT.md              the deliverable
+figures/                     5 figures, regenerated from the measured data
+captures/
+  pop3_wan_capture.pcapng    1,239-packet capture from the real lab run
+  run_summary.json           machine-readable results
+simulation/
+  pop3_wan_lab.py            POP3 server + 256 kbps / 450 ms emulator + failure injection
+  make_figures.py            regenerates every figure from the capture and summary
+  make_windows_screenshots.py  drives the Wireshark GUI (pywinauto) to re-take the evidence set
+screenshots/
+  win01–win04                full-screen Wireshark 4.6 (Windows) evidence set — see below
+  lab01–lab05                original run's screenshots, kept for provenance
+docs/
+  BACSE203 case study brief  assignment and rubric
+  Case Study CN template     official DOCX template
+  Team work-split charter    role allocation and viva questions
+  TEAM_AGENT_HANDOFF.md      per-member briefs (numbers superseded — see note)
+  AGENT_PROGRESS_LOG.md      project history, including the audit in Turn 16
+archive/superseded/          earlier drafts and their evidence, kept for provenance
+```
 
 ---
 
-## 👥 Team Work-Split Summary
+## Reproduce the experiment
 
-| Member | Assigned Role | Primary Section Ownership |
+Requirements: Python 3, `tshark` (Wireshark CLI). No root, no packages beyond the standard library.
+
+```bash
+python3 simulation/pop3_wan_lab.py        # runs the lab and writes captures/
+python3 simulation/make_figures.py        # regenerates figures/
+```
+
+Inspect the capture in Wireshark: open `captures/pop3_wan_capture.pcapng`, then
+**Decode As → TCP port 1110 → POP**, and filter `tcp.port == 1110`.
+
+On the command line:
+
+```bash
+tshark -r captures/pop3_wan_capture.pcapng -d tcp.port==1110,pop -Y "tcp.port==1110"
+```
+
+The lab emulates the link at the application level: 225 ms one-way delay per control turn (≈450 ms POP3 RTT) and a 256 kbps token bucket on the data path. The TCP handshake itself terminates on loopback, so it is sub-millisecond; the report states this limitation explicitly.
+
+### Wireshark evidence screenshots
+
+`screenshots/win01–win04` are full-screen captures of the Wireshark 4.6 GUI analyzing `captures/pop3_wan_capture.pcapng`, produced by GUI automation (`simulation/make_windows_screenshots.py`, needs `pip install pywinauto pillow`):
+
+| Screenshot | View | Verified against |
 | :--- | :--- | :--- |
-| **Person 1** | **Lead Protocol Analyst & FSM Architect** | Section 1 (Overview) & Section 6.1 (Question a: Theory & Limitations) |
-| **Person 2** | **WAN Systems & Workflow Architect** | Section 1.1–1.4 (WAN Modeling) & Section 6.2 (Question b: 5-Tier Workflow Design) |
-| **Person 3** | **Simulation & Packet Analysis Specialist** | Section 5 (Implementation, Wireshark Trace Disassembly & Terminal Logs) |
-| **Person 4** | **Cybersecurity & Threat Analyst** | Section 6.3 (Question c: Security Threats, APOP MD5 Flaws & Hardening Blueprint) |
-| **Person 5** | **Standards, Benchmarks & Polish Lead** | Tables 2, 3, 5, Section 4 (Findings), Section 7 (Conclusion), Section 8 (References) |
-
-*(For detailed AI prompts and instructions for each member, see **[`TEAM_AGENT_HANDOFF.md`](./TEAM_AGENT_HANDOFF.md)**).*
+| `win01_pop_dialogue.png` | `pop` display filter — the decoded USER/PASS/STAT/LIST/UIDL/TOP/RETR exchange | status bar: Displayed 556 (= `tshark -Y pop`) |
+| `win02_syn_handshake.png` | `tcp.flags.syn == 1 && tcp.port == 1110` — both sessions' handshakes | Displayed 4 |
+| `win03_follow_stream_session1_retr_blackout.png` | Follow TCP Stream, stream 0 — login, `TOP 4 0`, `RETR 4` cut off at 41.4 % | dialog text contains `RETR` |
+| `win04_follow_stream_session2_lockout.png` | Follow TCP Stream, stream 2 — reconnect rejected | dialog text contains `IN-USE` |
 
 ---
 
-## 🚀 How to Run the Wireshark Simulation Live
+## Produce the DOCX
 
-1. Open **Wireshark** on your machine and double-click the **`Loopback: lo0`** interface.
-2. In the display filter bar at the top, enter:
-   ```text
-   tcp.port == 1110
-   ```
-3. In a terminal, run:
-   ```bash
-   python3 run_wireshark_pop3_sim.py
-   ```
-4. Wireshark will capture the live frames showing the TCP handshake, cleartext password exposure, link drop, and `-ERR [IN-USE]` mailbox lock contention!
-5. In Wireshark, right-click any packet $\rightarrow$ select **Follow** $\rightarrow$ **TCP Stream** to inspect the full color-coded conversation.
+```bash
+pandoc FINAL_REPORT.md -o "Case Study 5 - POP3 Mailbox Access in a Low-Bandwidth Branch.docx" \
+  --reference-doc="docs/Case Study CN - Template-final (1).docx"
+```
+
+Fill in the team table, the instructor name and the team number before submission. The pandoc output embeds all five figures.
 
 ---
 
-## 📄 License & Academic Integrity
-Prepared for educational purposes for **BACSE203 Computer Networks** at VIT (SCOPE).
+## Team split
+
+| Member | Role | Owns |
+| :--- | :--- | :--- |
+| 1 | Lead protocol analyst and FSM architect | §1 overview, §6.1 (a) protocol and limitations |
+| 2 | WAN systems and workflow architect | §4.2 transport model, §5.4 and §6.2 (b) workflow |
+| 3 | Simulation and packet-analysis specialist | §5.1–5.3 lab, capture and frame evidence |
+| 4 | Cybersecurity and threat analyst | §4.5, §6.3 (c) threats and hardening |
+| 5 | Standards, benchmarks and quality lead | §2, §3, §4.1, §5.5, §7, §8 |
+
+> **Note on `docs/TEAM_AGENT_HANDOFF.md`:** the per-member prompts were written before the experiment was rebuilt. They quote 820 bytes for `TOP`, 147 s for the 3 MB transfer, a 3.15 MB spool and a "Dovecot" banner produced by a mock server. The authoritative values are **366 bytes**, **≈138 s**, **5,803,004 B (5.53 MiB)** and a **lab POP3 server**; see `FINAL_REPORT.md` §5.3.
+
+Prepared for academic assessment. All external sources are cited with access dates in §8.

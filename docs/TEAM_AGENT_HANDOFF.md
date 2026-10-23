@@ -1,5 +1,12 @@
 # BACSE203 Computer Networks — Case Study 5: Team Reconnaissance & Agent Handoff
 
+> **Status — 23 Oct 2026: numbers in the prompts below are superseded.**  
+> The experiment was rebuilt and every figure re-measured. The authoritative source is
+> [`FINAL_REPORT.md`](../FINAL_REPORT.md). Where this handoff says **820 bytes**, read **366 bytes**;
+> **147 s** → **≈138 s**; **3.15 MB spool** → **5,803,004 B (5.53 MiB)**; and the "Dovecot" banner in the
+> old screenshots came from a mock server, not a real Dovecot instance. Protocol, architecture and
+> security guidance in the prompts is otherwise still valid. See `AGENT_PROGRESS_LOG.md` Turn 16.
+
 > **Course:** Computer Networks (BACSE203) — Fall Semester 2026–27  
 > **School:** School of Computer Science and Engineering (SCOPE), VIT  
 > **Repository:** [https://github.com/ArunyaSrivastava/BACSE203-CaseStudy5-POP3](https://github.com/ArunyaSrivastava/BACSE203-CaseStudy5-POP3)  
