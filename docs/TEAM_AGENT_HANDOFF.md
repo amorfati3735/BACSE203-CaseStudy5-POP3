@@ -9,7 +9,7 @@
 
 > **Course:** Computer Networks (BACSE203) — Fall Semester 2026–27  
 > **School:** School of Computer Science and Engineering (SCOPE), VIT  
-> **Repository:** [https://github.com/ArunyaSrivastava/BACSE203-CaseStudy5-POP3](https://github.com/ArunyaSrivastava/BACSE203-CaseStudy5-POP3)  
+> **Repository:** [https://github.com/amorfati3735/BACSE203-CaseStudy5-POP3](https://github.com/amorfati3735/BACSE203-CaseStudy5-POP3)  
 > **Topic:** Case Study 5 — *POP3 Mailbox Access in a Low-Bandwidth Branch*  
 > **Evaluation Rubric:** 100 Marks (Converted to 10 Academic Marks)
 
