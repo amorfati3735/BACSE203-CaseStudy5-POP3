@@ -99,11 +99,12 @@ Fill in the team table, the instructor name and the team number before submissio
 
 | Member | Role | Owns |
 | :--- | :--- | :--- |
-| 1 | Lead protocol analyst and FSM architect | §1 overview, §6.1 (a) protocol and limitations |
-| 2 | WAN systems and workflow architect | §4.2 transport model, §5.4 and §6.2 (b) workflow |
-| 3 | Simulation and packet-analysis specialist | §5.1–5.3 lab, capture and frame evidence |
-| 4 | Cybersecurity and threat analyst | §4.5, §6.3 (c) threats and hardening |
-| 5 | Standards, benchmarks and quality lead | §2, §3, §4.1, §5.5, §7, §8 |
+| 25BCE0344 · Arunya Srivastava | Protocol theory and report preparation | §1 overview, §6.1 (a) protocol and limitations |
+| 25BCE0401 · Adarsh Kumar Singh | Workflow design | §4.2 transport model, §5.4 and §6.2 (b) workflow |
+| 25BCE0337 · Pratik Ambastha | Simulation and packet analysis | §5.1–5.3 lab, capture and frame evidence |
+| 25BCE0998 · Pranjal Paul | Security analysis | §4.5, §6.3 (c) threats and hardening |
+| 25BCE2004 · Bhavya Singh | Standards and references | §2, §3, §4.1, §5.5, §7, §8 |
+| 25BBS0046 · Shriyansh Gangwar | Testing and documentation | verification, formatting and proofreading |
 
 > **Note on `docs/TEAM_AGENT_HANDOFF.md`:** the per-member prompts were written before the experiment was rebuilt. They quote 820 bytes for `TOP`, 147 s for the 3 MB transfer, a 3.15 MB spool and a "Dovecot" banner produced by a mock server. The authoritative values are **366 bytes**, **≈138 s**, **5,803,004 B (5.53 MiB)** and a **lab POP3 server**; see `FINAL_REPORT.md` §5.3.
 

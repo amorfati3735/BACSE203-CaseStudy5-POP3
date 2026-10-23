@@ -21,12 +21,12 @@ Class ID: **VL2026270101688** (B2 + TB2 slot) · **Fall Semester 2026–27**
 
 | Registration Number | Name of the student | Role |
 | :--- | :--- | :--- |
-| 25BCE0337 | Pratik Ambastha | Simulation and packet-analysis specialist |
-| 25BCE0344 | Arunya Srivastava | Lead protocol analyst and FSM architect |
-| 25BCE0401 | Adarsh Kumar Singh | WAN systems and workflow architect |
-| 25BCE0998 | Pranjal Paul | Cybersecurity and threat analyst |
-| 25BCE2004 | Bhavya Singh | Standards, benchmarks and quality lead |
-| 25BBS0046 | Shriyansh Gangwar | Simulation and packet-analysis specialist |
+| 25BCE0337 | Pratik Ambastha | Simulation and packet analysis |
+| 25BCE0344 | Arunya Srivastava | Protocol theory and report preparation |
+| 25BCE0401 | Adarsh Kumar Singh | Workflow design |
+| 25BCE0998 | Pranjal Paul | Security analysis |
+| 25BCE2004 | Bhavya Singh | Standards and references |
+| 25BBS0046 | Shriyansh Gangwar | Testing and documentation |
 
 ---
 
